@@ -35,13 +35,33 @@ def fetch_route_stops(route: int):
     return out
 
 
+
+def distance(lat_1, lng_1, lat_2, lng_2) -> float:
+    return abs(lat_2 - lat_1) + abs(lng_2 - lng_1)
+
+
 def fetch_closest_stop(route, location):
     stops = fetch_route_stops(route)
-    # TODO: compare location with stop lat/lons to find closest
+    stops = sorted(stops, key=lambda stop: distance(
+        lat_1=location.latitude,
+        lng_1=location.longitude,
+        lat_2=stop['lat'],
+        lng_2=stop['lng']
+    ))
+    return stops[0]
 
 
-def fetch_next_busses(stop):
-    pass
+def fetch_next_busses(stop_id: str, route: str):
+    url = f"https://www3.septa.org/api/BusSchedules/index.php?stop_id={stop_id}"
+    try:
+        response = requests.get(url)
+        route_busses = response.json()[route]
+        route_busses = sorted(route_busses, key=lambda b: b["date"])
+        return route_busses
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching next buses: {e}")
+        return None
+  
 
 
 def main():
