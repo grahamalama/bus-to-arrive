@@ -24,7 +24,15 @@ def get_current_location() -> Coordinates:
 
 
 def fetch_route_stops(route: int):
-    stops = requests.get(f"https://www3.septa.org/api/Stops/index.php?req1={route}")
+    stops = requests.get(
+        f"https://www3.septa.org/api/Stops/index.php?req1={route}"
+    ).json()
+    out = []
+    for stop in stops:
+        stop["lat"] = float(stop["lat"])
+        stop["lng"] = float(stop["lng"])
+        out.append(stop)
+    return out
 
 
 def fetch_closest_stop(route, location):
