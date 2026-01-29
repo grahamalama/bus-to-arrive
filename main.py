@@ -20,8 +20,16 @@ def get_current_location() -> Coordinates:
         return None
 
 
-def fetch_closest_stop(locaiton: Coordinates):
-    pass
+#  {'lng': '-75.16122', 'lat': '39.931609', 'stopid': '16608', 'stopname': 'Passyunk Av & 10th St'}
+
+
+def fetch_route_stops(route: int):
+    stops = requests.get(f"https://www3.septa.org/api/Stops/index.php?req1={route}")
+
+
+def fetch_closest_stop(route, location):
+    stops = fetch_route_stops(route)
+    # TODO: compare location with stop lat/lons to find closest
 
 
 def fetch_next_busses(stop):
@@ -44,7 +52,7 @@ def main():
         location = get_current_location()
     location = args.start
 
-    stop = fetch_closest_stop(location)
+    stop = fetch_closest_stop(args.route, location)
     busses = fetch_next_busses(stop)
 
 
